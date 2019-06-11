@@ -28,9 +28,21 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     });
     //handle a connection requeest
     node.on('peer:connect' , (peerInfo) => {
-        //reply for now so we don't time out
-        event.reply('peer:connect', peerInfo.id.toB58String());
+        console.log("Connection established with: ", peerInfo.id.toB58String());
+        //send test dial
+        node.dialProtocol(peerInfo, 'testMessage', (err, conn) => {
+            if (err) {
+                console.log("error sending test message to node");
+            };
+            console.log("sent test message to node");
+        });
+
+        //at this point we want to start waiting for messages to send
         
+    });
+    //handle test dial
+    node.handle('testMessage', (protocol, conn) => {
+        console.log("recieved testMessage from other node");
     });
     
 });
