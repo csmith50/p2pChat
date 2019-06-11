@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<hmtl lang = "en">
+<head>
+    <title>Login</title>
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        function sendToMain() {
+            var name = document.getElementById("name").value;
+            if (name == null || name == "") {
+                document.getElementById("error").innerHTML = "Name is required";
+            }
+            else {
+                ipcRenderer.send('peer:start', name);
+                console.log("sent message to main.js");
+            }
+        }
+    </script>
+</head>
+<body>
+    <p id = "error"></p><br>
+    Login:
+    <input type = "text" id = "name">
+    <input type = "button" onclick = "sendToMain()" value = "Find Peers">
+</body>
+</hmtl>

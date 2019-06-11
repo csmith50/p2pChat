@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>p2pchat</title>
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        function sendToMain(message) {
+            ipcRenderer.send('message:send', message);
+            console.log("sent message to main.js");
+        }
+
+        function getCurrentTime() {
+            return new Date();
+        }
+
+        function formatTime(today) {
+            return (today.getMonth()+1) + '-' + today.getDate() + "-"  + today.getFullYear() + " @ " + 
+                    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        }
+
+        ipcRenderer.on('peer:connect', (event, arg) => {
+            alert('peer has been found! info: '.concat(arg));
+        })
+    </script>
+    <script>
+        function sendEnter(e) {
+            if (e.keyCode == 13) {
+                //get message and add time code 
+                var message = document.getElementById("textarea").value;
+                var time = getCurrentTime();
+                //update display
+                var node = document.createElement("LI");
+                var textnode = document.createTextNode(formatTime(time) + " " + message);
+                node.appendChild(textnode);
+                document.getElementById("chat-list").appendChild(node);
+                //send message to main.js
+                var package = {
+                    message, 
+                    time
+                };
+                sendToMain(package);
+                //remove text in chat text window
+                document.getElementById("textarea").value = '';
+            }
+        }
+        function send() {
+            //get message and add time code 
+            var message = document.getElementById("textarea").value;
+            var time = getCurrentTime(true);
+            //update display
+            var node = document.createElement("LI");
+            var textnode = document.createTextNode(time + " " + message);
+            node.appendChild(textnode);
+            document.getElementById("chat-list").appendChild(node);
+            //send message to main.js
+            var package = {
+                message,
+                time
+            };
+            sendToMain(message);
+            //remove text in chat text window
+            document.getElementById("textarea").value = '';
+        }
+    </script>
+</head>
+<body>
+    <div class = "chat-window">
+        <ul id = "chat-list">
+
+        </ul>
+    </div>
+    <input type = "textarea" name = "message" id = "textarea" onkeypress = "sendEnter(event)" value = "" autofocus>
+    <input type = "button" name = "send" value = "Send" id = "sendButton" onclick = "send(event)">
+</body>
+</html>
