@@ -22,7 +22,8 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     node.on('peer:discovery', (peer) => {
         console.log('peer found:', peer.id.toB58String());
         //notify main that a peer has been found
-        process.send('peer:found', peer.id.toB58String());
+        process.send({peer: peer.id.toB58String(),
+                        protocol: 'peer:found'});
         node.dial(peer, () => {});
     });
     //handle a connection requeest

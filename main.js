@@ -51,9 +51,11 @@ ipcMain.on('peer:start', function(event, item){
     windowCopy.close();
 });
 
-//catch peer:found from libp2p
-peerProcess.on('peer:found', (m) => {
-    mainWindow.webContents.send('peer:found', m);
+//catch and handle messages from libp2p
+peerProcess.on('message', (m) => {
+    if (m.protocol = 'peer:found') {
+        mainWindow.webContents.send('peer:found', m.peer);
+    }
 });
 
 //catch peer:accept from waitForPeers
