@@ -60,8 +60,6 @@ peerProcess.on('message', (m) => {
 
 //TODO: Need to catch recieved message here
 
-//TODO: Need to send outbound message to child process
-
 //catch peer:accept from waitForPeers
 ipcMain.on('peer:accept', function(event, item) {
     //open our chat window to that peer
@@ -93,6 +91,7 @@ ipcMain.on('message:send', function(e, item){
     console.log("message recieved in main.js");
     console.log(item.message);
     console.log(item.time);
+    peerProcess.send({protocol: 'peer:send', message: item.message, time: item.time});
 });
 
 // Create menu template; a menu is just an array of objects
