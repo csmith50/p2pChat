@@ -22,13 +22,13 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     node.peerInfo.multiaddrs.forEach((ma) => console.log(ma.toString()));
     //start listening for peers
     node.on('peer:discovery', (peer) => {
-        if (!knownNodes.includes(peer.id.toB58String())) {
+        if (!knownNodes.includes(peer)) {
             console.log('peer found:', peer.id.toB58String());
             //notify main that a peer has been found
             process.send({peer: peer.id.toB58String(),
                             protocol: 'peer:found'});
             node.dial(peer, () => {});
-            knownNodes.push(peer.id.toB58String());
+            knownNodes.push(peer);
         }
     });
     //handle a connection requeest
@@ -46,14 +46,17 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     //handle messages from the main process
     process.on('message', (m) => {
         if (m.protocol === 'peer:send') {
-            node.dialProtocol(peerInfo, 'newMessage', (err, conn) => {
-                 if (err) {
-                    console.log("error sending message to node");
-                }
-                 else {
-                    console.log("sent message to node");
-                }
-            });
+            //dial all the nodes that we know about
+            for (i = 0; i < knownNodes.length; i++) {
+                node.dialProtocol(knownNodes[i], 'newMessage', (err, conn) => {
+                    if (err) {
+                        console.log("error sending message to node");
+                    }
+                    else {
+                        console.log("sent message to node");
+                    }
+                });
+            }
         }
     });
 
