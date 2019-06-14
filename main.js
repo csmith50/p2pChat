@@ -54,9 +54,13 @@ ipcMain.on('peer:start', function(event, item){
 //catch and handle messages from libp2p
 peerProcess.on('message', (m) => {
     if (m.protocol = 'peer:found') {
-        mainWindow.webContents.send('peer:found', m.peer);
+        mainWindow.webContents.send('peer:connect', m.peer);
     }
 });
+
+//TODO: Need to catch recieved message here
+
+//TODO: Need to send outbound message to child process
 
 //catch peer:accept from waitForPeers
 ipcMain.on('peer:accept', function(event, item) {

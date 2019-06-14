@@ -2,6 +2,8 @@ const Node = require("./p2p-bundle.js");
 const PeerInfo = require('peer-info');
 const waterfall = require('async-waterfall');
 
+var knownNodes = [];
+
 waterfall([ //this section of code will run asynchronously with the rest of the function
     (cb) => PeerInfo.create(cb),
     (PeerInfo, cb) => {
@@ -20,11 +22,14 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     node.peerInfo.multiaddrs.forEach((ma) => console.log(ma.toString()));
     //start listening for peers
     node.on('peer:discovery', (peer) => {
-        console.log('peer found:', peer.id.toB58String());
-        //notify main that a peer has been found
-        process.send({peer: peer.id.toB58String(),
-                        protocol: 'peer:found'});
-        node.dial(peer, () => {});
+        if (!knownNodes.includes(peer.id.toB58String())) {
+            console.log('peer found:', peer.id.toB58String());
+            //notify main that a peer has been found
+            process.send({peer: peer.id.toB58String(),
+                            protocol: 'peer:found'});
+            node.dial(peer, () => {});
+            knownNodes.push(peer.id.toB58String());
+        }
     });
     //handle a connection requeest
     node.on('peer:connect' , (peerInfo) => {
@@ -33,18 +38,33 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         node.dialProtocol(peerInfo, 'testMessage', (err, conn) => {
             if (err) {
                 console.log("error sending test message to node");
-            };
+            }
             console.log("sent test message to node");
         });
-
-        //at this point we want to start waiting for messages to send
-        
     });
+
+    //handle messages from the main process
+    process.on('message', (m) => {
+        if (m.protocol === 'peer:send') {
+            node.dialProtocol(peerInfo, 'newMessage', (err, conn) => {
+                 if (err) {
+                    console.log("error sending message to node");
+                }
+                 else {
+                    console.log("sent message to node");
+                }
+            });
+        }
+    });
+
     //handle test dial
     node.handle('testMessage', (protocol, conn) => {
         console.log("recieved testMessage from other node");
     });
-    
+    node.handle('newMessage', (protocol, conn) => {
+        process.send({protocol: 'messageRecieved', message: protocol.message});
+        console.log("sent recieved message to main process");
+    })
 });
 
 process.on('peer:deny', (m) => {
