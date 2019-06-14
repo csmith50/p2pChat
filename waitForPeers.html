@@ -9,8 +9,8 @@
         ipcRenderer.on('peer:connect', (event, arg) => {
             document.getElementById("main text").innerHTML = "Peer Found!";
             document.getElementById("hidden").innerHTML = "Would you like to connect?";
-            document.getElementById("no button").setAttribute("hidden", "");
-            document.getElementById("yes button").setAttribute("hidden", "");
+            document.getElementById("no button").setAttribute("display", "block");
+            document.getElementById("yes button").setAttribute("display", "block");
         })
 
         function sendYes() {
@@ -27,7 +27,7 @@
 <body>
     <h1 id = "main text">Waiting for peers...</h1>
     <p id = "hidden"></p>
-    <input type = "button" value = "yes" hidden = "hidden" id = "yes button" onclick="sendYes()">
-    <input type = "button" name = "no" value = "no" hidden = "hidden" id = "no button" onclick="sendNo()">
+    <input type = "button" value = "yes" display = "none" id = "yes button" onclick="sendYes()">
+    <input type = "button" name = "no" value = "no" display = "none" id = "no button" onclick="sendNo()">
 </body>
 </html>
