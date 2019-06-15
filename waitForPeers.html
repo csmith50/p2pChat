@@ -11,7 +11,7 @@
             document.getElementById("hidden").innerHTML = "Would you like to connect?";
             document.getElementById("no button").setAttribute("display", "block");
             document.getElementById("yes button").setAttribute("display", "block");
-        })
+        });
 
         function sendYes() {
             ipcRenderer.send('peer:accept');

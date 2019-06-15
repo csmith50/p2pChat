@@ -51,14 +51,15 @@ ipcMain.on('peer:start', function(event, item){
     windowCopy.close();
 });
 
-//catch and handle messages from libp2p
+//catch and handle inbound messages from libp2p
 peerProcess.on('message', (m) => {
     if (m.protocol = 'peer:found') {
         mainWindow.webContents.send('peer:connect', m.peer);
     }
+    else if (m.protocol = 'messageRecieved') {
+        mainWindow.webContents.send('recieve', {message: m.message, time: m.time});
+    }
 });
-
-//TODO: Need to catch recieved message here
 
 //catch peer:accept from waitForPeers
 ipcMain.on('peer:accept', function(event, item) {
@@ -75,6 +76,7 @@ ipcMain.on('peer:accept', function(event, item) {
         slashes: true
     }));
     tempWindow.close();
+    mainWindow.webContents.send('setName', {name: displayName});
 });
 //catch peer:deny from waitForPeers
 ipcMain.on('peer:deny', function(event, item) {
@@ -91,7 +93,7 @@ ipcMain.on('message:send', function(e, item){
     console.log("message recieved in main.js");
     console.log(item.message);
     console.log(item.time);
-    peerProcess.send({protocol: 'peer:send', message: item.message, time: item.time});
+    peerProcess.send({protocol: 'peer:send', message: item.message, time: item.time, name: displayName});
 });
 
 // Create menu template; a menu is just an array of objects

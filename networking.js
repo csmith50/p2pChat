@@ -1,6 +1,7 @@
 const Node = require("./p2p-bundle.js");
 const PeerInfo = require('peer-info');
 const waterfall = require('async-waterfall');
+const pull = require('pull-stream');
 
 var knownNodes = [];
 
@@ -54,6 +55,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                     }
                     else {
                         console.log("sent message to node");
+                        pull(pull.values([m.message, m.time, m.name]), conn);
                     }
                 });
             }
@@ -65,8 +67,10 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         console.log("recieved testMessage from other node");
     });
     node.handle('newMessage', (protocol, conn) => {
-        process.send({protocol: 'messageRecieved', message: protocol.message});
-        console.log("sent recieved message to main process");
+        pull(conn, pull.collect((err, data) => {
+            process.send({protocol: 'messageRecieved', message: data[0], time: data[1], name: data[2]});
+            console.log("sent recieved message to main process");   
+        }));
     })
 });
 
