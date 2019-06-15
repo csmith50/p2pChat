@@ -57,6 +57,7 @@ peerProcess.on('message', (m) => {
         mainWindow.webContents.send('peer:connect', m.peer);
     }
     else if (m.protocol = 'messageRecieved') {
+        console.log("from libp2p: ", m);
         mainWindow.webContents.send('recieve', {message: m.message, time: m.time});
     }
 });
