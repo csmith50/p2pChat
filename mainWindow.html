@@ -16,9 +16,22 @@
             return new Date();
         }
 
-        function formatTime(today) {
-            return (today.getMonth()+1) + '-' + today.getDate() + "-"  + today.getFullYear() + " @ " + 
-                    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        function formatTime(time) {
+            var currentTime = getCurrentTime();
+            //if the current time is more than 25 hours later than the time of message then display date
+            if (time.getHours() - currentTime.getHours() > 25) {
+                return (time.getMonth()+1 + '/' + time.getDate());
+            }
+            else {
+                return (time.getHours() + ":" + time.getMinutes() + ":");
+            }
+        }
+
+        function displayMessage(message, time, displayName) {
+            var node = document.createElement("LI");
+            var textnode = document.createTextNode(displayName + ": " + formatTime(time) + " " + message);
+            node.appendChild(textnode);
+            document.getElementById("chat-list").appendChild(node);
         }
 
         ipcRenderer.on('setName', (event, arg) => {
@@ -26,10 +39,7 @@
         });
 
         ipcRenderer.on('recieve', (event, arg) => {
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode(arg.name + ": " + formatTime(arg.time) + " " + arg.message);
-            node.appendChild(textnode);
-            document.getElementById("chat-list").appendChild(node);
+            displayMessage(arg.message, arg.time, arg.name);
         });
 
         function sendEnter(e) {
@@ -37,17 +47,15 @@
                 //get message and add time code 
                 var message = document.getElementById("textarea").value;
                 var time = getCurrentTime();
-                //update display
-                var node = document.createElement("LI");
-                var textnode = document.createTextNode(name + ": " + formatTime(time) + " " + message);
-                node.appendChild(textnode);
-                document.getElementById("chat-list").appendChild(node);
-                //send message to main.js
                 var package = {
                     message, 
                     time
                 };
                 sendToMain(package);
+
+                //update display
+                displayMessage(package.message, package.time, name);
+                
                 //remove text in chat text window
                 document.getElementById("textarea").value = '';
             }
@@ -56,17 +64,15 @@
             //get message and add time code 
             var message = document.getElementById("textarea").value;
             var time = getCurrentTime();
-            //update display
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode(name + ": " + formatTime(time) + " " + message);
-            node.appendChild(textnode);
-            document.getElementById("chat-list").appendChild(node);
-            //send message to main.js
             var package = {
                 message,
                 time
             };
             sendToMain(package);
+
+            //update display
+            displayMessage(package.message, package.time, name);
+
             //remove text in chat text window
             document.getElementById("textarea").value = '';
         }
