@@ -28,6 +28,7 @@
         }
 
         function displayMessage(message, time, displayName) {
+            console.log("inside displaymessage");
             var node = document.createElement("LI");
             var textnode = document.createTextNode(displayName + ": " + formatTime(time) + " " + message);
             node.appendChild(textnode);
@@ -36,9 +37,11 @@
 
         ipcRenderer.on('setName', (event, arg) => {
             name = arg.name;
+            console.log("recieved setname. name is: ", name);
         });
 
         ipcRenderer.on('recieve', (event, arg) => {
+            console.log("entered recieve callback... calling displaymessage");
             displayMessage(arg.message, arg.time, arg.name);
         });
 
