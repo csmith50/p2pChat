@@ -72,7 +72,8 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 console.log("error getting recieved message: ", err);
             }
             console.log("sending recieved message to main process: ", data);
-            process.send({protocol: 'messageRecieved', message: data[0], time: data[1], name: data[2]});   
+            process.send({protocol: 'messageRecieved', message: data[0].toString('utf8'), 
+                time: data[1].toString('utf8'), name: data[2].toString('utf8')});   
         }));
     })
 });

@@ -53,10 +53,10 @@ ipcMain.on('peer:start', function(event, item){
 
 //catch and handle inbound messages from libp2p
 peerProcess.on('message', (m) => {
-    if (m.protocol = 'peer:found') {
+    if (m.protocol === 'peer:found') {
         mainWindow.webContents.send('peer:connect', m.peer);
     }
-    else if (m.protocol = 'messageRecieved') {
+    else if (m.protocol === 'messageRecieved') {
         console.log("from libp2p: ", m);
         mainWindow.webContents.send('recieve', {message: m.message, time: m.time});
     }
