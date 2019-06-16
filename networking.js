@@ -51,7 +51,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             for (i = 0; i < knownNodes.length; i++) {
                 node.dialProtocol(knownNodes[i], 'newMessage', (err, conn) => {
                     if (err) {
-                        console.log("error sending message to node");
+                        console.log("error sending message to node: ", err);
                     }
                     else {
                         console.log("sent message to node");
@@ -68,8 +68,11 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     });
     node.handle('newMessage', (protocol, conn) => {
         pull(conn, pull.collect((err, data) => {
-            process.send({protocol: 'messageRecieved', message: data[0], time: data[1], name: data[2]});
-            console.log("sent recieved message to main process");   
+            if (err) {
+                console.log("error getting recieved message: ", err);
+            }
+            console.log("sending recieved message to main process: ", data);
+            process.send({protocol: 'messageRecieved', message: data[0], time: data[1], name: data[2]});   
         }));
     })
 });
