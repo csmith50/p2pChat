@@ -44,7 +44,7 @@ ipcMain.on('peer:start', function(event, item){
         }
     });
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'waitForPeers.html'),
+        pathname: path.join(__dirname, 'mainWindow.html'),
         protocol: 'file:',
         slashes: true
     }));

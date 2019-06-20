@@ -5,11 +5,20 @@
     <script>
         const electron = require('electron');
         const {ipcRenderer} = electron;
+        var peers  = [];
         var name = "";
 
         ipcRenderer.on('setName', (event, arg) => {
             name = arg.name;
             console.log("recieved setname. name is: ", name);
+        });
+
+        ipcRenderer.on('peer:connect', (event, arg) => {
+            var node = document.createElement("LI");
+            var textnode = document.createTextNode("you are now connected to: " + arg.peer.id.toB58String());
+            node.appendChild(textnode);
+            document.getElementById("chat-list").appendChild(node);
+            peers.push(arg.peer);
         });
 
         ipcRenderer.on('recieve', (event, arg) => {
