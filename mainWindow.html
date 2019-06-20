@@ -7,6 +7,16 @@
         const {ipcRenderer} = electron;
         var name = "";
 
+        ipcRenderer.on('setName', (event, arg) => {
+            name = arg.name;
+            console.log("recieved setname. name is: ", name);
+        });
+
+        ipcRenderer.on('recieve', (event, arg) => {
+            console.log("entered recieve callback... calling displaymessage");
+            displayMessage(arg.message, arg.time, arg.name);
+        });
+
         function sendToMain(message) {
             ipcRenderer.send('message:send', message);
             console.log("sent message to main.js");
@@ -34,16 +44,6 @@
             node.appendChild(textnode);
             document.getElementById("chat-list").appendChild(node);
         }
-
-        ipcRenderer.on('setName', (event, arg) => {
-            name = arg.name;
-            console.log("recieved setname. name is: ", name);
-        });
-
-        ipcRenderer.on('recieve', (event, arg) => {
-            console.log("entered recieve callback... calling displaymessage");
-            displayMessage(arg.message, arg.time, arg.name);
-        });
 
         function sendEnter(e) {
             if (e.keyCode == 13) {
