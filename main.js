@@ -51,15 +51,14 @@ ipcMain.on('peer:start', function(event, item){
     }));
     windowCopy.close();
     mainWindow.name = "chat-window";
-});
-
-mainWindow.webContents.on('did-finish-load', () => {
-    console.log("inside did finish load");
-    if (mainWindow.name == "chat-window") {
-        renderFinish = true;
-        peerProcess = cp.fork('networking.js'); //Start libp2p
-        mainWindow.webContents.send('setName', {name: displayName});
-    }
+    mainWindow.webContents.on('did-finish-load', () => {
+        console.log("inside did finish load");
+        if (mainWindow.name == "chat-window") {
+            renderFinish = true;
+            peerProcess = cp.fork('networking.js'); //Start libp2p
+            mainWindow.webContents.send('setName', {name: displayName});
+        }
+    });
 });
 
 //catch and handle inbound messages from libp2p
