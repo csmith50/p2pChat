@@ -10,7 +10,7 @@
 
         ipcRenderer.on('setName', (arg) => {
             name = arg.name;
-            console.log("recieved setname. name is: ", name);
+            console.log("recieved setname. name is: ", arg.name);
         });
 
         ipcRenderer.on('peer:connect', (arg) => {

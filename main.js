@@ -7,7 +7,8 @@ const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 let mainWindow;
 let displayName;
-let peerProcess = cp.fork('networking.js'); //Start libp2p
+let peerProcess;
+let renderFinish = false;
 
 // Listen for the app to be ready
 app.on('ready', function(){
@@ -49,17 +50,30 @@ ipcMain.on('peer:start', function(event, item){
         slashes: true
     }));
     windowCopy.close();
+    mainWindow.name = "chat-window";
+});
+
+mainWindow.webContents.on('did-finish-load', () => {
+    console.log("inside did finish load");
+    if (mainWindow.name == "chat-window") {
+        renderFinish = true;
+        peerProcess = cp.fork('networking.js'); //Start libp2p
+        mainWindow.webContents.send('setName', {name: displayName});
+    }
 });
 
 //catch and handle inbound messages from libp2p
 peerProcess.on('message', (m) => {
     if (m.protocol === 'peer:found') {
-        mainWindow.webContents.send('peer:connect', m.peer);
+        if (renderFinish) {
+            mainWindow.webContents.send('peer:connect', m.peer);
+        }
     }
     else if (m.protocol === 'messageRecieved') {
-        console.log("from libp2p: ", m);
-        console.log("mainwindow is: ", typeof(mainWindow));
-        mainWindow.webContents.send('recieve', {message: m.message, time: m.time});
+        if (renderFinish) {
+            console.log("from libp2p: ", m);;
+            mainWindow.webContents.send('recieve', {message: m.message, time: m.time});
+        }
     }
 });
 
