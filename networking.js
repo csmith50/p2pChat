@@ -8,7 +8,8 @@ var knownNodes = [];
 waterfall([ //this section of code will run asynchronously with the rest of the function
     (cb) => PeerInfo.create(cb),
     (PeerInfo, cb) => {
-        PeerInfo.multiaddrs.add(['/ip4/0.0.0.0/tcp/0', '/ip4/0.0.0.0/tcp/0/ws']); //In tcp this means give me any IP and listen on port 120
+        PeerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0'); //In tcp this means give me any IP and listen on port 120
+        PeerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0/ws'); //Do the same thing but for websockets 
         node = new Node({peerInfo: PeerInfo});
         node.start(cb);
     }
