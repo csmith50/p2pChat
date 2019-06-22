@@ -6,8 +6,8 @@ const cp = require('child_process');
 const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 let mainWindow;
-let displayName;
-let peerProcess;
+let displayName = "";
+let peerProcess = cp.fork('networking.js'); //Start libp2p
 let renderFinish = false;
 
 // Listen for the app to be ready
@@ -25,6 +25,18 @@ app.on('ready', function(){
         slashes: true
     }));
 
+    //specify what to do on load
+    mainWindow.webContents.on('did-finish-load', () => {
+        console.log("inside did finish load");
+        console.log("the name of window is: ", mainWindow.name);
+        if (mainWindow.name == "chat-window") {
+            console.log("inside if");
+            renderFinish = true;
+            mainWindow.webContents.send('setName', {name: displayName});
+            console.log("sent setName");
+        }
+    });
+
     //Build menu from template
     const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
     //Insert menu
@@ -38,21 +50,12 @@ ipcMain.on('peer:start', function(event, item){
     console.log(displayName);
 
     //close login window and open wait screen
+    mainWindow.name = "chat-window";
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'mainWindow.html'),
         protocol: 'file:',
         slashes: true
     }));
-    mainWindow.name = "chat-window";
-});
-
-mainWindow.webContents.on('did-finish-load', () => {
-    console.log("inside did finish load");
-    if (mainWindow.name == "chat-window") {
-        renderFinish = true;
-        peerProcess = cp.fork('networking.js'); //Start libp2p
-        mainWindow.webContents.send('setName', {name: displayName});
-    }
 });
 
 //catch and handle inbound messages from libp2p
