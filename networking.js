@@ -8,7 +8,7 @@ var knownNodes = [];
 waterfall([ //this section of code will run asynchronously with the rest of the function
     (cb) => PeerInfo.create(cb),
     (PeerInfo, cb) => {
-        PeerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/8080'); //In tcp this means give me any IP and listen on port 120
+        PeerInfo.multiaddrs.add(['/ip4/0.0.0.0/tcp/0', '/ip4/0.0.0.0/tcp/0/ws']); //In tcp this means give me any IP and listen on port 120
         node = new Node({peerInfo: PeerInfo});
         node.start(cb);
     }
@@ -28,7 +28,9 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             //notify main that a peer has been found
             process.send({peer: peer.id.toB58String(),
                             protocol: 'peer:found'});
-            node.dial(peer, () => {});
+            node.dial(peer, (e) => {
+                if (e) console.log("error sending initial dial: ", e);
+            });
             knownNodes.push(peer);
         }
     });
