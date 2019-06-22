@@ -38,27 +38,21 @@ ipcMain.on('peer:start', function(event, item){
     console.log(displayName);
 
     //close login window and open wait screen
-    var windowCopy = mainWindow;
-    mainWindow = new BrowserWindow({
-        webPreferences: {
-            nodeIntegration: true
-        }
-    });
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'mainWindow.html'),
         protocol: 'file:',
         slashes: true
     }));
-    windowCopy.close();
     mainWindow.name = "chat-window";
-    mainWindow.webContents.on('did-finish-load', () => {
-        console.log("inside did finish load");
-        if (mainWindow.name == "chat-window") {
-            renderFinish = true;
-            peerProcess = cp.fork('networking.js'); //Start libp2p
-            mainWindow.webContents.send('setName', {name: displayName});
-        }
-    });
+});
+
+mainWindow.webContents.on('did-finish-load', () => {
+    console.log("inside did finish load");
+    if (mainWindow.name == "chat-window") {
+        renderFinish = true;
+        peerProcess = cp.fork('networking.js'); //Start libp2p
+        mainWindow.webContents.send('setName', {name: displayName});
+    }
 });
 
 //catch and handle inbound messages from libp2p
@@ -74,33 +68,6 @@ peerProcess.on('message', (m) => {
             mainWindow.webContents.send('recieve', {message: m.message, time: m.time});
         }
     }
-});
-
-//catch peer:accept from waitForPeers
-ipcMain.on('peer:accept', function(event, item) {
-    //open our chat window to that peer
-    var tempWindow = mainWindow;
-    mainWindow = new BrowserWindow({
-        webPreferences: {
-            nodeIntegration: true
-        }
-    });
-    mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'mainWindow.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
-    tempWindow.close();
-    mainWindow.webContents.send('setName', {name: displayName});
-});
-//catch peer:deny from waitForPeers
-ipcMain.on('peer:deny', function(event, item) {
-    //tell libp2p to disconnect
-    peerProcess.send('peer:deny', (e) => {
-        if (e) {
-            console.log("error sending message to fork");
-        }
-    })
 });
 
 //Catch message:send
