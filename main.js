@@ -32,7 +32,7 @@ app.on('ready', function(){
         if (mainWindow.name == "chat-window") {
             console.log("inside if");
             renderFinish = true;
-            mainWindow.webContents.send('setName', {name: displayName});
+            mainWindow.webContents.send('setName', [displayName]);
             console.log("sent setName");
         }
     });
@@ -68,7 +68,7 @@ peerProcess.on('message', (m) => {
     else if (m.protocol === 'messageRecieved') {
         if (renderFinish) {
             console.log("from libp2p: ", m);;
-            mainWindow.webContents.send('recieve', {message: m.message, time: m.time});
+            mainWindow.webContents.send('recieve', [m.message, m.time, m.name]);
         }
     }
 });

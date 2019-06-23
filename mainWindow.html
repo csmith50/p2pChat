@@ -14,9 +14,9 @@
         });
 
         ipcRenderer.on('peer:connect', (event, arg) => {
-            console.log("inside peer:connect peer is", arg.peer);
+            console.log("inside peer:connect peer is", arg[0]);
             var node = document.createElement("LI");
-            var textnode = document.createTextNode("you are now connected to: " + arg.peer.id.toB58String());
+            var textnode = document.createTextNode("you are now connected to: " + arg[0].id.toB58String());
             node.appendChild(textnode);
             document.getElementById("chat-list").appendChild(node);
             peers.push(arg.peer);
@@ -24,8 +24,8 @@
 
         ipcRenderer.on('recieve', (event, arg) => {
             console.log("entered recieve callback...");
-            console.log("variables are: ", arg.message, arg.time, arg.name);
-            displayMessage(arg.message, arg.time, arg.name);
+            console.log("variables are: ", arg);
+            displayMessage(arg[0], arg[1], arg[2]);
         });
 
         function sendToMain(message) {
