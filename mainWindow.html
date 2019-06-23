@@ -10,7 +10,7 @@
 
         ipcRenderer.on('setName', (event, arg) => {
             name = arg.name;
-            console.log("recieved setname. name is: ", arg.name);
+            console.log("recieved setname. name is: ", arg[0]);
         });
 
         ipcRenderer.on('peer:connect', (event, arg) => {
@@ -37,7 +37,8 @@
             return new Date();
         }
 
-        function formatTime(time) {
+        function formatTime(timeString) {
+            var time = Date.parse(timeString);
             var currentTime = getCurrentTime();
             //if the current time is more than 25 hours later than the time of message then display date
             if (time.getHours() - currentTime.getHours() > 25) {
