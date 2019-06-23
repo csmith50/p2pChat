@@ -37,8 +37,24 @@
             return new Date();
         }
 
+        function parseTime(timeStr) {
+            var year = timeStr.substr(0, 3);
+            var month = timeStr.substr(5, 6);
+            var day = timeStr.substr(8, 9);
+            var hours = timeStr.substr(11, 12);
+            var minutes = timeStr.substr(14, 15);
+
+            var date = new Date()
+            date.setFullYear(parseInt(year, 10));
+            date.setMonth(parseInt(month, 10));
+            date.setDate(parseInt(day, 10));
+            date.setHours(parseInt(hours, 10));
+            date.setMinutes(parseInt(minutes, 10));
+            return date;
+        }
+
         function formatTime(timeString) {
-            var time = Date.parse(timeString);
+            var time = parseTime(timeString);
             var currentTime = getCurrentTime();
             //if the current time is more than 25 hours later than the time of message then display date
             if (time.getHours() - currentTime.getHours() > 25) {
