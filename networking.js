@@ -32,7 +32,12 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             node.dial(peer, (e) => {
                 if (e) console.log("error sending initial dial: ", e);
             });
-            knownNodes.push(peer);
+            knownNodes.push(peer.id.toB58String());
+            /*
+            node.dialProtocol(peer, 'getKnownPeers', (err, conn) => {
+                if (err) console.log("error dialing for known peers");
+                else console.log("sent request for known peers");
+            });*/
         }
     });
     //handle a connection requeest
@@ -69,6 +74,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     node.handle('testMessage', (protocol, conn) => {
         console.log("recieved testMessage from other node");
     });
+
     node.handle('newMessage', (protocol, conn) => {
         pull(conn, pull.collect((err, data) => {
             if (err) {
@@ -78,7 +84,36 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             process.send({protocol: 'messageRecieved', message: data[0].toString('utf8'), 
                 time: data[1].toString('utf8'), name: data[2].toString('utf8')});   
         }));
-    })
+    });
+/*
+    node.handle('getKnownPeers', (protocol, conn) => {
+        node.dialProtocol(conn, 'sendingPeers', (err, conn) => {
+            if (err) console.log("error sending known nodes to peer: ", err);
+            else {
+                for (var i = 0; i < knownNodes.length; i++) {
+                    pull(pull.values(knownNodes[i]));
+                } 
+                console.log("sent known nodes to peer");
+            }
+        })
+    });
+
+    node.handle('sendingPeers', (protocol, conn) => {
+        console.log("recieved known peers from other node");
+        pull(conn, pull.collect((err, data) => {
+            if (err) console.log("error retriving known nodes: ", err);
+            else {
+                for (var i = 0; i < data.length; i++) {
+                    if (!knownNodes.includes(data[i])) {
+                        //dial new peer and try to connect?
+                        knownNodes.push(data[i]);
+                        console.log("discovered new peer: ", data[i]);
+                    }
+                }   
+            }
+        }));
+    });
+    */
 });
 
 process.on('peer:deny', (m) => {

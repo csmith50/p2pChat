@@ -9,6 +9,7 @@ let mainWindow;
 let displayName = "";
 let peerProcess = cp.fork('networking.js'); //Start libp2p
 let renderFinish = false;
+let chatLog = [];
 
 // Listen for the app to be ready
 app.on('ready', function(){
@@ -69,6 +70,7 @@ peerProcess.on('message', (m) => {
         if (renderFinish) {
             console.log("from libp2p: ", m);;
             mainWindow.webContents.send('recieve', [m.message, m.time, m.name]);
+            chatLog.push(m);
         }
     }
 });
@@ -79,6 +81,8 @@ ipcMain.on('message:send', function(e, item){
     console.log(item.message);
     console.log(item.time);
     peerProcess.send({protocol: 'peer:send', message: item.message, time: item.time, name: displayName});
+    item.name = displayName;
+    chatLog.push(item);
 });
 
 // Create menu template; a menu is just an array of objects

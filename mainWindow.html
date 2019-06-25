@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <title>p2pchat</title>
+    <link rel = "stylesheet" href = "normalize.css">
+    <link rel = "stylesheet" href = "skeleton.css">
     <script>
         const electron = require('electron');
         const {ipcRenderer} = electron;
@@ -9,7 +11,7 @@
         var name = "";
 
         ipcRenderer.on('setName', (event, arg) => {
-            name = arg.name;
+            name = arg[0];
             console.log("recieved setname. name is: ", arg[0]);
         });
 
@@ -53,8 +55,11 @@
             return date;
         }
 
-        function formatTime(timeString) {
-            var time = parseTime(timeString);
+        function formatTime(timeTemp) {
+            if (typeof(timeTemp) == String) {
+                var time = parseTime(timeString);
+            }
+            else var time = timeTemp;
             var currentTime = getCurrentTime();
             //if the current time is more than 25 hours later than the time of message then display date
             if (time.getHours() - currentTime.getHours() > 25) {
