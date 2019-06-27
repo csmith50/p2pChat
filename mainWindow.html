@@ -4,6 +4,7 @@
     <title>p2pchat</title>
     <link rel = "stylesheet" href = "normalize.css">
     <link rel = "stylesheet" href = "skeleton.css">
+    <link rel = "stylesheet" href = "custom.css">
     <script>
         const electron = require('electron');
         const {ipcRenderer} = electron;
@@ -72,10 +73,36 @@
 
         function displayMessage(message, time, displayName) {
             console.log("inside displaymessage");
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode(displayName + ": " + formatTime(time) + " " + message);
-            node.appendChild(textnode);
-            document.getElementById("chat-list").appendChild(node);
+            //create our nodes
+            var message_block = document.createElement("div");
+            //add attributes here
+
+            var meta_row = document.createElement("div");
+            var row_att = document.createAttribute("class");
+            row_att.value = "row";
+            meta_row.setAttributeNode(row_att);
+
+            var row_att_clone = document.createAttribute("class")
+            row_att_clone.value = "row"; 
+            var mess_row = document.createElement("div");
+            mess_row.setAttributeNode(row_att_clone);
+
+            var meta_node = document.createElement("p");
+            var meta_text = document.createTextNode(displayName + " @ " + formatTime(time));
+
+            var mess_node = document.createElement("p");
+            var mess_text = document.createTextNode(message);
+
+            //start putting our nodes together from bottom to top
+            mess_node.appendChild(mess_text);
+            meta_node.appendChild(meta_text);
+
+            mess_row.appendChild(mess_node);
+            meta_row.appendChild(meta_node);
+
+            message_block.appendChild(meta_row);
+            message_block.appendChild(mess_row);
+            document.getElementById("chat-log").appendChild(message_block);
         }
 
         function sendEnter(e) {
@@ -115,12 +142,18 @@
     </script>
 </head>
 <body>
-    <div class = "chat-window">
-        <ul id = "chat-list">
-
-        </ul>
+    <div class = "container" id = "chat-log">
+        <!--This section will be updated dynamically as we send and recieve messages-->
+        <!--The general format is:-->
+        <!--div class = "message-block"-->
+        <!--div class = "row"-->
+        <!--name and time info here-->
+        <!--div class = "row"-->
+        <!--div class = "message here"-->
     </div>
-    <input type = "textarea" name = "message" id = "textarea" onkeypress = "sendEnter(event)" value = "" autofocus>
-    <input type = "button" name = "send" value = "Send" id = "sendButton" onclick = "send(event)">
+    <div class = "row">
+        <input type = "textarea" name = "message" id = "textarea" onkeypress = "sendEnter(event)" value = "" class = "u-full-width" placeholder = "Enter a message..." autofocus>
+        <input type = "button" name = "send" value = "Send" id = "sendButton" onclick = "send(event)" class = "button-primary">
+    </div>
 </body>
 </html>
