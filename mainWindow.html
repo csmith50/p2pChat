@@ -74,19 +74,25 @@
         function displayMessage(message, time, displayName) {
             console.log("inside displaymessage");
             //create our nodes
+            //message block
             var message_block = document.createElement("div");
-            //add attributes here
+            var messg_block_c = document.createAttribute("class");
+            messg_block_c.value = "message-block"
+            message_block.setAttributeNode(messg_block_c);
 
+            //row for name and time stamp
             var meta_row = document.createElement("div");
             var row_att = document.createAttribute("class");
             row_att.value = "row";
             meta_row.setAttributeNode(row_att);
 
+            //row for message 
             var row_att_clone = document.createAttribute("class")
             row_att_clone.value = "row"; 
             var mess_row = document.createElement("div");
             mess_row.setAttributeNode(row_att_clone);
 
+            //put text in our rows
             var meta_node = document.createElement("p");
             var meta_text = document.createTextNode(displayName + " @ " + formatTime(time));
 
@@ -109,6 +115,7 @@
             if (e.keyCode == 13) {
                 //get message and add time code 
                 var message = document.getElementById("textarea").value;
+                if (message === "") return;
                 var time = getCurrentTime();
                 var package = {
                     message, 
@@ -126,6 +133,7 @@
         function send() {
             //get message and add time code 
             var message = document.getElementById("textarea").value;
+            if (message === "") return;
             var time = getCurrentTime();
             var package = {
                 message,
@@ -151,9 +159,15 @@
         <!--div class = "row"-->
         <!--div class = "message here"-->
     </div>
-    <div class = "row">
-        <input type = "textarea" name = "message" id = "textarea" onkeypress = "sendEnter(event)" value = "" class = "u-full-width" placeholder = "Enter a message..." autofocus>
-        <input type = "button" name = "send" value = "Send" id = "sendButton" onclick = "send(event)" class = "button-primary">
+    <!--this is to make sure messages always appear on top of the message box-->
+    <div class = "blank">
+        <p hidden></p>
+    </div>
+    <div class = "text-enter">
+        <div class = "row">
+            <input type = "textarea" name = "message" id = "textarea" onkeypress = "sendEnter(event)" value = "" class = "u-full-width" placeholder = "Enter a message..." autofocus>
+            <input type = "button" name = "send" value = "Send" id = "sendButton" onclick = "send(event)" class = "button-primary">
+        </div>
     </div>
 </body>
 </html>
