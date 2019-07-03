@@ -11,6 +11,8 @@ let peerProcess = cp.fork('networking.js'); //Start libp2p
 let renderFinish = false;
 let chatLog = [];
 
+//TODO: have the app make a sound when a message is recieved or sent
+
 // Listen for the app to be ready
 app.on('ready', function(){
     //create new window

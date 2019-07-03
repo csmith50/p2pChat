@@ -28,7 +28,7 @@
         ipcRenderer.on('recieve', (event, arg) => {
             console.log("entered recieve callback...");
             console.log("variables are: ", arg);
-            displayMessage(arg[0], arg[1], arg[2]);
+            displayMessage(arg[0], arg[1], arg[2], false);
         });
 
         function sendToMain(message) {
@@ -71,7 +71,15 @@
             }
         }
 
-        function displayMessage(message, time, displayName) {
+        function focusLastMessage() {
+            var messages = document.getElementsByClassName("message-block");
+            if (messages.length > 1) {
+                messages[messages.length - 1].scrollIntoView();
+                console.log("page moved");
+            }
+        }
+
+        function displayMessage(message, time, displayName, focus) {
             console.log("inside displaymessage");
             //create our nodes
             //message block
@@ -93,15 +101,26 @@
             mess_row.setAttributeNode(row_att_clone);
 
             //put text in our rows
+            //TODO: style the name and time code: make name bold and time code smaller and lightgrey
             var meta_node = document.createElement("p");
-            var meta_text = document.createTextNode(displayName + " @ " + formatTime(time));
+            var meta_name = document.createElement("b");
+            var meta_time = document.createElement("i");
+            var meta_time_a = document.createAttribute("class")
+            meta_time_a.value = "time_text"
+            meta_time.setAttributeNode(meta_time_a);
+            var meta_name_t = document.createTextNode(displayName + " ");
+            var meta_time_t = document.createTextNode(formatTime(time));
 
+            meta_name.appendChild(meta_name_t);
+            meta_time.appendChild(meta_time_t);
+            
             var mess_node = document.createElement("p");
             var mess_text = document.createTextNode(message);
 
             //start putting our nodes together from bottom to top
             mess_node.appendChild(mess_text);
-            meta_node.appendChild(meta_text);
+            meta_node.appendChild(meta_name);
+            meta_node.appendChild(meta_time);
 
             mess_row.appendChild(mess_node);
             meta_row.appendChild(meta_node);
@@ -109,6 +128,7 @@
             message_block.appendChild(meta_row);
             message_block.appendChild(mess_row);
             document.getElementById("chat-log").appendChild(message_block);
+            if (focus) focusLastMessage();
         }
 
         function sendEnter(e) {
@@ -124,7 +144,7 @@
                 sendToMain(package);
 
                 //update display
-                displayMessage(package.message, package.time, name);
+                displayMessage(package.message, package.time, name, true);
                 
                 //remove text in chat text window
                 document.getElementById("textarea").value = '';
@@ -142,7 +162,7 @@
             sendToMain(package);
 
             //update display
-            displayMessage(package.message, package.time, name);
+            displayMessage(package.message, package.time, name, true);
 
             //remove text in chat text window
             document.getElementById("textarea").value = '';

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<hmtl lang = "en">
 <head>
     <title>Login</title>
+    <meta charset = "UTF-8">
     <link rel = "stylesheet" href = "normalize.css">
     <link rel = "stylesheet" href = "skeleton.css">
+    <link rel = "stylesheet" href = "custom.css">
     <script>
         const electron = require('electron');
         const {ipcRenderer} = electron;
@@ -21,17 +22,18 @@
     </script>
 </head>
 <body>
-    <div class = "container">
-        <div class = "row">
-            <p id = "error"></p><br>
-            <div clas = "eight columns">
-                <p>Login:</p>
-                <input type = "text" id = "name" class = "button-primary">
-            </div>
-            <div class = "two columns">
-                <input type = "button" onclick = "sendToMain()" value = "Find Peers">
+    <div id = "login_center">
+        <div class = "container">
+            <div class = "row">
+                <p id = "error"></p><br>
+                <div clas = "eight columns">
+                    <p>Login:</p>
+                    <input type = "text" id = "name" class = "button-primary">
+                </div>
+                <div class = "two columns">
+                    <input type = "button" onclick = "sendToMain()" value = "Find Peers">
+                </div>
             </div>
         </div>
     </div>
 </body>
-</hmtl>
