@@ -19,6 +19,19 @@
                 console.log("sent message to main.js");
             }
         }
+
+        function sendToMainEnter(e) {
+            if (e.keyCode == 13) {
+                var name = document.getElementById("name").value;
+                if (name == null || name == "") {
+                    document.getElementById("error").innerHTML = "Name is required";
+                }
+                else {
+                    ipcRenderer.send('peer:start', name);
+                    console.log("sent message to main.js");
+                }
+            }
+        }
     </script>
 </head>
 <body>
@@ -26,13 +39,13 @@
         <div class = "container">
             <div class = "row">
                 <img src = "content/logo.png" id = "center_logo">
-                <h4>Round Table P2P</h4><!--put this inside the logo image instead-->
+                <h3>Round Table P2P</h3>
             </div>
             <div class = "row">
                 <p id = "error"></p><br>
                 <div clas = "eight columns">
                     <p>Login:</p>
-                    <input type = "text" id = "name" class = "button-primary">
+                    <input type = "text" id = "name" class = "button-primary" onkeypress="sendToMainEnter(event)" autofocus>
                 </div>
                 <div class = "two columns">
                     <input type = "button" onclick = "sendToMain()" value = "Find Peers">
