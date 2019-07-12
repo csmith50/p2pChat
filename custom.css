@@ -39,3 +39,10 @@
     position: absolute;
     margin: 0 auto;
 }
+
+#center_logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}

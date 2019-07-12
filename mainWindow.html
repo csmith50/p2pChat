@@ -129,6 +129,10 @@
             message_block.appendChild(mess_row);
             document.getElementById("chat-log").appendChild(message_block);
             if (focus) focusLastMessage();
+
+            //play an audio cue that we have a new message
+            var audio = new Audio('content/blip.wav');
+            audio.play();
         }
 
         function sendEnter(e) {
@@ -179,7 +183,7 @@
         <!--div class = "row"-->
         <!--div class = "message here"-->
     </div>
-    <!--this is to make sure messages always appear on top of the message box-->
+    <!--this is to make sure messages always appear behind the message box-->
     <div class = "blank">
         <p hidden></p>
     </div>

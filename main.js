@@ -11,8 +11,6 @@ let peerProcess = cp.fork('networking.js'); //Start libp2p
 let renderFinish = false;
 let chatLog = [];
 
-//TODO: have the app make a sound when a message is recieved or sent
-
 // Listen for the app to be ready
 app.on('ready', function(){
     //create new window
@@ -21,7 +19,7 @@ app.on('ready', function(){
             nodeIntegration: true
         },
         width: 1280,
-        height: 800,
+        height: 720,
         minWidth: 400,
         minHeight: 400
     });
@@ -130,6 +128,13 @@ if(process.env.NODE_ENV !== 'production'){
             },
             {
                 role: 'reload'
+            },
+            {
+                label: 'Display chat log',
+                click(item, focusedWindow){
+                    console.log("chat log display requested:");
+                    console.log(chatLog);
+                }
             }
         ]
     });

@@ -21,6 +21,7 @@
     "libp2p-spdy": "^0.13.3",
     "libp2p-tcp": "^0.13.0",
     "peer-info": "^0.15.1",
+    "play-sound": "^1.1.3",
     "pull-stream": "^3.6.12",
     "ws": ">=3.3.1"
   }

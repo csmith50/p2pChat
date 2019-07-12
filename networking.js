@@ -74,7 +74,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     node.handle('testMessage', (protocol, conn) => {
         console.log("recieved testMessage from other node");
     });
-
+    //handle recieving message from other node
     node.handle('newMessage', (protocol, conn) => {
         pull(conn, pull.collect((err, data) => {
             if (err) {
