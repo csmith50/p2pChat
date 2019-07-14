@@ -29,6 +29,9 @@
             console.log("entered recieve callback...");
             console.log("variables are: ", arg);
             displayMessage(arg[0], arg[1], arg[2], false);
+            //play an audio cue that we have a new message
+            var audio = new Audio('content/blip-recieve.wav');
+            audio.play();
         });
 
         function sendToMain(message) {
@@ -67,7 +70,10 @@
                 return (time.getMonth()+1 + '/' + time.getDate());
             }
             else {
-                return (time.getHours() + ":" + time.getMinutes() + ":");
+                var string = time.getHours() % 12 + ":";
+                if (parseInt(time.getMinutes(), 10) < 10) string += "0" + time.getMinutes();
+                else string += time.getMinutes();
+                return string;
             }
         }
 
@@ -101,7 +107,6 @@
             mess_row.setAttributeNode(row_att_clone);
 
             //put text in our rows
-            //TODO: style the name and time code: make name bold and time code smaller and lightgrey
             var meta_node = document.createElement("p");
             var meta_name = document.createElement("b");
             var meta_time = document.createElement("i");
@@ -129,10 +134,6 @@
             message_block.appendChild(mess_row);
             document.getElementById("chat-log").appendChild(message_block);
             if (focus) focusLastMessage();
-
-            //play an audio cue that we have a new message
-            var audio = new Audio('content/blip.wav');
-            audio.play();
         }
 
         function sendEnter(e) {
@@ -152,6 +153,10 @@
                 
                 //remove text in chat text window
                 document.getElementById("textarea").value = '';
+
+                //play audio send message audio cue
+                var audio = new Audio('content/blip.wav');
+                audio.play();
             }
         }
         function send() {
@@ -170,6 +175,10 @@
 
             //remove text in chat text window
             document.getElementById("textarea").value = '';
+
+            //play audio send message audio cue
+            var audio = new Audio('content/blip.wav');
+            audio.play();
         }
     </script>
 </head>
