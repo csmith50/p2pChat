@@ -9,6 +9,7 @@
         const electron = require('electron');
         const {ipcRenderer} = electron;
         var peers  = [];
+        var peerNames = [];
         var name = "";
 
         ipcRenderer.on('setName', (event, arg) => {
@@ -28,6 +29,10 @@
         ipcRenderer.on('recieve', (event, arg) => {
             console.log("entered recieve callback...");
             console.log("variables are: ", arg);
+            if (!peerNames.includes(arg[2])) {
+                console.log("new peer found:", arg[2]);
+                displayNewConn(arg[2]);
+            }
             displayMessage(arg[0], arg[1], arg[2], false);
             //play an audio cue that we have a new message
             var audio = new Audio('content/blip-recieve.wav');
@@ -91,7 +96,7 @@
             //message block
             var message_block = document.createElement("div");
             var messg_block_c = document.createAttribute("class");
-            messg_block_c.value = "message-block"
+            messg_block_c.value = "message-block";
             message_block.setAttributeNode(messg_block_c);
 
             //row for name and time stamp
@@ -134,6 +139,33 @@
             message_block.appendChild(mess_row);
             document.getElementById("chat-log").appendChild(message_block);
             if (focus) focusLastMessage();
+        }
+
+        function displayNewConn(name) {
+            //create our nodes
+            //message block
+            var message_block = document.createElement("div");
+            var messg_block_c = document.createAttribute("class");
+            messg_block_c.value = "message-block";
+            message_block.setAttributeNode(messg_block_c);
+
+            //create a row for our text
+            var conn_block = document.createElement("div");
+            var conn_block_c = document.createAttribute("class");
+            conn_block_c.value = "row";
+            conn_block.setAttribute(conn_block_c);
+
+            //set text for new connection notification
+            var conn_text = document.createElement("i");
+            var conn_text_a = createAttribute("class");
+            conn_text_a.value = "time-text";
+            conn_text.setAttribute(conn_text_a);
+            var conn_text_n = document.createTextNode("You are now connected to " + name);
+
+            //append each child
+            conn_text.appendChild(conn_text_n);
+            conn_block.appendChild(conn_text);
+            message_block.appendChild(conn_block);
         }
 
         function sendEnter(e) {

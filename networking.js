@@ -30,7 +30,14 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             process.send({peer: "/" + peer.id.toB58String(),
                             protocol: 'peer:found'});
             node.dial(peer, (e) => {
-                if (e) console.log("error sending initial dial: ", e);
+                if (e) {
+                    console.log("error sending initial dial: ", e);
+                    if (knownNodes.includes(peer)) {
+                        knownNodes = knownNodes.filter((value, index, arr) => {
+                            return value !== peer;
+                        });
+                    }
+                }
             });
             knownNodes.push(peer);
             /*
@@ -48,7 +55,9 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             if (err) {
                 console.log("error sending test message to node", err);
             }
-            console.log("sent test message to node");
+            else {
+                console.log("sent test message to node");
+            }
         });
     });
 
