@@ -27,12 +27,12 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         if (!knownNodes.includes(peer)) {
             console.log('peer found:', peer.id.toB58String());
             //notify main that a peer has been found
-            process.send({peer: peer.id.toB58String(),
+            process.send({peer: "/" + peer.id.toB58String(),
                             protocol: 'peer:found'});
             node.dial(peer, (e) => {
                 if (e) console.log("error sending initial dial: ", e);
             });
-            knownNodes.push(peer.id.toB58String());
+            knownNodes.push("/" + peer.id.toB58String());
             /*
             node.dialProtocol(peer, 'getKnownPeers', (err, conn) => {
                 if (err) console.log("error dialing for known peers");
