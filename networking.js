@@ -32,7 +32,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             node.dial(peer, (e) => {
                 if (e) console.log("error sending initial dial: ", e);
             });
-            knownNodes.push("/" + peer.id.toB58String());
+            knownNodes.push(peer);
             /*
             node.dialProtocol(peer, 'getKnownPeers', (err, conn) => {
                 if (err) console.log("error dialing for known peers");
