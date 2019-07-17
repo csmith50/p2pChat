@@ -154,7 +154,7 @@
 
             //set text for new connection notification
             var conn_text = document.createElement("i");
-            var conn_text_a = createAttribute("class");
+            var conn_text_a = document.createAttribute("class"); 
             conn_text_a.value = "time-text";
             conn_text.setAttribute(conn_text_a);
             var conn_text_n = document.createTextNode("You are now connected to " + name);
