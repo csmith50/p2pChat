@@ -58,11 +58,13 @@
             date.setDate(parseInt(day, 10));
             date.setHours(parseInt(hours, 10));
             date.setMinutes(parseInt(minutes, 10));
+            console.log("created new date object. date is: ", date);
             return date;
         }
 
         function formatTime(timeTemp) {
             if (typeof(timeTemp) == String) {
+                console.log("time was a string");
                 var time = parseTime(timeString);
             }
             else var time = timeTemp;
