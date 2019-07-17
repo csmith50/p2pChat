@@ -30,8 +30,8 @@ class Node extends libp2p {
         const defaults = {
             modules: {
                 transport: [
-                    TCP,
-                    WS
+                    TCP//,
+                    //WS
                 ],
                 streamMuxer: [
                     SPDY,
