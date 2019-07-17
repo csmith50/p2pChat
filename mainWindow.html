@@ -68,6 +68,7 @@
             else var time = timeTemp;
             var currentTime = getCurrentTime();
             //if the current time is more than 25 hours later than the time of message then display date
+            console.log("in format time before bug time is: ", time);
             if (time.getHours() - currentTime.getHours() > 25) {
                 return (time.getMonth()+1 + '/' + time.getDate());
             }
