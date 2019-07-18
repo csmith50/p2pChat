@@ -142,6 +142,7 @@
         }
 
         function displayNewConn(name) {
+            console.log("entered display new connection");
             //create our nodes
             //message block
             var message_block = document.createElement("div");
@@ -166,6 +167,7 @@
             conn_text.appendChild(conn_text_n);
             conn_block.appendChild(conn_text);
             message_block.appendChild(conn_block);
+            document.getElementById("chat-log").appendChild(message_block);
         }
 
         function sendEnter(e) {
