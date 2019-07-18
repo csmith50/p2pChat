@@ -77,12 +77,31 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 });
             }
         }
+        else if (m.protocol === 'newUserNameResponse') {
+            console.log("got our name from main: ", m.name);
+            node.dialProtocol(m.peer, 'newUser', (protocol, conn) => {
+                pull(pull.values([m.name]), conn);
+                console.log("sent our name to new user");
+            });
+        }
     });
 
-    //handle test dial
+    //handle test dial; this includes new user connections
     node.handle('testMessage', (protocol, conn) => {
         console.log("recieved testMessage from other node");
+        var peerInfo = conn.getPeerInfo((e) => {
+            if (e) console.log("error retriving peer info from connection object");
+        });
+        process.send({protocol: 'newUserNameRequest', peer: peerInfo});
     });
+
+    node.handle('newUser', (protocol, conn) => {
+        pull(conn, pull.collect((err, data) => {
+            console.log("got the name of our new connection", data[0]);
+            process.send({protocol: 'newUserConnection', name: data[0].toString('utf8')});
+        }));
+    });
+
     //handle recieving message from other node
     node.handle('newMessage', (protocol, conn) => {
         pull(conn, pull.collect((err, data) => {
@@ -123,8 +142,4 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         }));
     });
     */
-});
-
-process.on('peer:deny', (m) => {
-    console.log("recieved peer deny");
 });

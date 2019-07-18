@@ -25,16 +25,25 @@
         ipcRenderer.on('recieve', (event, arg) => {
             console.log("entered recieve callback...");
             console.log("variables are: ", arg);
+            /*
             if (!peerNames.includes(arg[2])) {
                 console.log("new peer found:", arg[2]);
                 displayNewConn(arg[2]);
                 peerNames.push(arg[2]);
-            }
+            }*/
             displayMessage(arg[0], arg[1], arg[2], false);
             //play an audio cue that we have a new message
             var audio = new Audio('content/blip-recieve.wav');
             audio.play();
         });
+
+        ipcRenderer.on('newUser', (event, arg) => {
+            console.log("got new user name from main:", arg);
+            if(!peerNames.includes(arg[0])) {
+                displayNewConn(arg[0]);
+                peerNames.push(arg[0]);
+            }
+        })
 
         function sendToMain(message) {
             ipcRenderer.send('message:send', message);

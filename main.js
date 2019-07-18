@@ -77,6 +77,12 @@ peerProcess.on('message', (m) => {
             chatLog.push(m);
         }
     }
+    else if (m.protocol === 'newUserNameRequest') {
+        peerProcess.send({protocol: 'newUserNameResponse', name: displayName});
+    }
+    else if (m.protocol === 'newUserConnection') {
+        mainWindow.webContents.send('newUser', [m.name]);
+    }
 });
 
 //Catch message:send
