@@ -33,7 +33,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 if (e) {
                     console.log("error sending initial dial: ", e);
                     if (knownNodes.includes(peer)) {
-                        knownNodes = knownNodes.filter((value, index, arr) => {
+                            knownNodes = knownNodes.filter((value, index, arr) => {
                             return value !== peer;
                         });
                     }
@@ -91,6 +91,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         console.log("recieved testMessage from other node");
         var peerInfo = conn.getPeerInfo((e) => {
             if (e) console.log("error retriving peer info from connection object");
+            else console.log("peer we are sending name to: ", peerInfo);
         });
         process.send({protocol: 'newUserNameRequest', peer: peerInfo});
     });
