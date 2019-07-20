@@ -97,8 +97,13 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
 
     node.handle('newUser', (protocol, conn) => {
         pull(conn, pull.collect((err, data) => {
-            console.log("got the name of our new connection", data[0]);
-            process.send({protocol: 'newUserConnection', name: data[0].toString('utf8')});
+            if (err) {
+                console.log("error getting name from new user: ", err);
+            }
+            else {
+                console.log("got the name of our new connection", data[0]);
+                process.send({protocol: 'newUserConnection', name: data[0].toString('utf8')});
+            }
         }));
     });
 
