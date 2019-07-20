@@ -4,6 +4,7 @@ const waterfall = require('async-waterfall');
 const pull = require('pull-stream');
 
 var knownNodes = [];
+var sendName;
 
 waterfall([ //this section of code will run asynchronously with the rest of the function
     (cb) => PeerInfo.create(cb),
@@ -50,6 +51,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     //handle a connection requeest
     node.on('peer:connect' , (peerInfo) => {
         console.log("Connection established with: ", peerInfo.id.toB58String());
+        sendName = peerInfo;
         //send test dial
         node.dialProtocol(peerInfo, 'testMessage', (err, conn) => {
             if (err) {
@@ -79,7 +81,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         }
         else if (m.protocol === 'newUserNameResponse') {
             console.log("got our name from main: ", m.name);
-            node.dialProtocol(m.peer, 'newUser', (protocol, conn) => {
+            node.dialProtocol(sendName, 'newUser', (protocol, conn) => {
                 pull(pull.values([m.name]), conn);
                 console.log("sent our name to new user");
             });
