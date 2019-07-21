@@ -86,6 +86,14 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 console.log("sent our name to new user");
             });
         }
+        else if (m.protocol === 'disconnecting') {
+            for (i = 0; i < knownNodes.length; i++) {
+                node.dialProtocol(knownNodes[i], 'disconnect', (err, conn) => {
+                    pull(pull.values([m.name]), conn);
+                    console.log("sent disconnect notice to all peers");
+                })
+            }
+        }
     });
 
     //handle test dial; this includes new user connections
@@ -119,6 +127,17 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             console.log("sending recieved message to main process: ", data);
             process.send({protocol: 'messageRecieved', message: data[0].toString('utf8'), 
                 time: data[1].toString('utf8'), name: data[2].toString('utf8')});   
+        }));
+    });
+
+    //handle disconnect notices from other peers
+    node.handle('disconnect', (protocol, conn) => {
+        pull(conn, pull.collect((err, data) => {
+            if (err) console.log("error getting recieved message: ", err);
+            else {
+                process.send({protocol: 'disconnectNotice', name: data[0].toString('utf8')});
+                console.log("sending disconnect notice to main");
+            }
         }));
     });
 /*

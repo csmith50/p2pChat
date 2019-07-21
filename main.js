@@ -42,6 +42,16 @@ app.on('ready', function(){
         }
     });
 
+    //when the user clicks the app's close button tell libp2p to disconnect to all peers
+    mainWindow.on('close', () => {
+        peerProcess.send({protocol: 'disconnecting', name: displayName}, (e) => {
+            if (e) console.log("error sending disconnect message:", e);
+            console.log("mainWindow is closing........");
+        });
+        //give libp2p some time to execute the disconnect; waits for 200 miliseconds
+        setTimeout(function (){}, 200);
+    });
+
     //Build menu from template
     const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
     //Insert menu
@@ -61,6 +71,7 @@ ipcMain.on('peer:start', function(event, item){
         protocol: 'file:',
         slashes: true
     }));
+    //TODO: start libp2p here instead of at the top
 });
 
 //catch and handle inbound messages from libp2p
@@ -82,6 +93,10 @@ peerProcess.on('message', (m) => {
     }
     else if (m.protocol === 'newUserConnection') {
         mainWindow.webContents.send('newUser', [m.name]);
+    }
+    else if (m.protocol === 'disconnectNotice') {
+        console.log("recieved disconnect notice from libp2p");
+        mainWindow.webContents.send('disconnectNotice', [m.name]);
     }
 });
 

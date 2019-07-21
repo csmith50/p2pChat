@@ -25,12 +25,6 @@
         ipcRenderer.on('recieve', (event, arg) => {
             console.log("entered recieve callback...");
             console.log("variables are: ", arg);
-            /*
-            if (!peerNames.includes(arg[2])) {
-                console.log("new peer found:", arg[2]);
-                displayNewConn(arg[2]);
-                peerNames.push(arg[2]);
-            }*/
             displayMessage(arg[0], arg[1], arg[2], false);
             //play an audio cue that we have a new message
             var audio = new Audio('content/blip-recieve.wav');
@@ -40,10 +34,19 @@
         ipcRenderer.on('newUser', (event, arg) => {
             console.log("got new user name from main:", arg);
             if(!peerNames.includes(arg[0])) {
-                displayNewConn(arg[0]);
+                displayAlert("You are now connected to ", arg[0]);
                 peerNames.push(arg[0]);
             }
         })
+
+        ipcRenderer.on('disconnectNotice', (event, arg) => {
+            if (peerNames.includes(arg[0])) {
+                displayAlert("You have bene disconnected from ", arg[0]);
+                peerNames = peerNames.filter((ele) => {
+                    return ele == arg[0];
+                });
+            }
+        });
 
         function sendToMain(message) {
             ipcRenderer.send('message:send', message);
@@ -84,6 +87,8 @@
                 return (time.getMonth()+1 + '/' + time.getDate());
             }
             else {
+                //TODO: add a check here to see if the time is greater than 12 and if so mod it by 12 and add a PM
+                //also if the time is less than 12 add an AM 
                 var string = time.getHours() % 12 + ":";
                 if (parseInt(time.getMinutes(), 10) < 10) string += "0" + time.getMinutes();
                 else string += time.getMinutes();
@@ -150,7 +155,7 @@
             if (focus) focusLastMessage();
         }
 
-        function displayNewConn(name) {
+        function displayAlert(message, name = "") {
             console.log("entered display new connection");
             //create our nodes
             //message block
@@ -170,7 +175,7 @@
             var conn_text_a = document.createAttribute("class"); 
             conn_text_a.value = "time-text";
             conn_text.setAttributeNode(conn_text_a);
-            var conn_text_n = document.createTextNode("You are now connected to " + name);
+            var conn_text_n = document.createTextNode(message + name);
 
             //append each child
             conn_text.appendChild(conn_text_n);
