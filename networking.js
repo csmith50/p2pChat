@@ -164,6 +164,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     node.handle('chatLogResponse', (protocol, conn) => {
         console.log("recieved chat log from new peer");
         pull(conn, pull.collect((err, data) => {
+            if (err) console.log("error getting log data from new peer: ", err);
             var processedLogs = data[0].toJSON();
             console.log("buffer converted to json is: ", processedLogs);
             //process.send({protocol: 'chatLodDisplay', logs: data[0]});
