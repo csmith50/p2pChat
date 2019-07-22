@@ -50,6 +50,9 @@ app.on('ready', function(){
         });
         //give libp2p some time to execute the disconnect; waits for 200 miliseconds
         setTimeout(function (){}, 200);
+        //delete our chat logs
+        chatLog = [];
+        console.log("chat logs deleted... app is now closing");
     });
 
     //Build menu from template

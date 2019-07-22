@@ -41,7 +41,7 @@
 
         ipcRenderer.on('disconnectNotice', (event, arg) => {
             if (peerNames.includes(arg[0])) {
-                displayAlert("You have bene disconnected from ", arg[0]);
+                displayAlert("You have been disconnected from ", arg[0]);
                 peerNames = peerNames.filter((ele) => {
                     return ele == arg[0];
                 });
