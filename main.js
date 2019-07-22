@@ -105,6 +105,10 @@ peerProcess.on('message', (m) => {
         console.log("recieved chat log request from libp2p");
         peerProcess.send({protocol: 'chatLogResponse', logs: chatLog});
     }
+    else if (m.protocol === 'chatLogDisplay') {
+        console.log("received chat log display from libp2p");
+        mainWindow.webContents.send('chatLogDisplay', [m.names, m.messages, m.times]);
+    }
 });
 
 //Catch message:send

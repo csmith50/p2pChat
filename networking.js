@@ -88,7 +88,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             });
         }
         else if (m.protocol === 'disconnecting') {
-            for (i = 0; i < knownNodes.length; i++) {
+            for (var i = 0; i < knownNodes.length; i++) {
                 node.dialProtocol(knownNodes[i], 'disconnect', (err, conn) => {
                     pull(pull.values([m.name]), conn);
                     console.log("sent disconnect notice to all peers");
@@ -98,7 +98,15 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         else if (m.protocol === 'chatLogResponse') {
             console.log("got our chat log from main");
             node.dialProtocol(sendName, 'chatLogResponse', (protocol, conn) => {
-                pull(pull.values([m.logs]), conn);
+                var names = [];
+                var messages = [];
+                var times = [];
+                for (var i = 0; i < m.logs.length; i++) {
+                    names.push(m.logs[i].name);
+                    messages.push(m.logs[i].message);
+                    times.push(m.logs[i].time);
+                }
+                pull(pull.values([names, messages, times]), conn);
                 console.log("sent our logs to the user");
             });
         }
@@ -165,11 +173,18 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
         console.log("recieved chat log from new peer");
         pull(conn, pull.collect((err, data) => {
             if (err) console.log("error getting log data from new peer: ", err);
-            var processedLogs = data[0].toJSON();
-            console.log("buffer converted to json is: ", processedLogs);
-            //process.send({protocol: 'chatLodDisplay', logs: data[0]});
+            console.log("inside the chatLogResponse pull collect----------------------");
+            //data is sent as a buffer so we need to convert to json and parse it
+            var names = arg[0].toJSON();
+            var messages = arg[1].toJSON();
+            var times = arg[2].toJSON();
+            console.log("here is data represented as json: ", names);
+            console.log(messages);
+            console.log(times);
+
+            //process.send({protocol: 'chatLogDisplay', names: data[0], messages: data[1], times: data[2]});
         }));
-    })
+    });
 /*
     node.handle('getKnownPeers', (protocol, conn) => {
         node.dialProtocol(conn, 'sendingPeers', (err, conn) => {

@@ -48,6 +48,12 @@
             }
         });
 
+        ipcRenderer.on('chatLogDisplay', (event, arg) => {
+            for (var i = 0; i < arg[0].length; i++) {
+                displayMessage(arg[0][i], arg[1][i], arg[2][i]);
+            }
+        });
+
         function sendToMain(message) {
             ipcRenderer.send('message:send', message);
             console.log("sent message to main.js");
