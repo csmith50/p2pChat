@@ -41,6 +41,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 }
             });
             knownNodes.push(peer);
+            sendName = peer;
             /*
             node.dialProtocol(peer, 'getKnownPeers', (err, conn) => {
                 if (err) console.log("error dialing for known peers");
@@ -101,7 +102,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 console.log("sent our logs to the user");
             });
         }
-        else console.log("did not recognize message protocol from main");
+        else console.log("did not recognize message protocol from main: ", m);
     });
 
     //handle test dial; this includes new user connections
