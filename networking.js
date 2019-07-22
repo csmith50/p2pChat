@@ -94,6 +94,14 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 })
             }
         }
+        else if (m.protocol === 'chatLogRequest') {
+            console.log("got our chat log from main");
+            node.dialProtocol(sendName, 'chatLogResponse', (protocol, conn) => {
+                pull(pull.values([m.logs]), conn);
+                console.log("sent our logs to the user");
+            });
+        }
+        else console.log("did not recognize message protocol from main");
     });
 
     //handle test dial; this includes new user connections
@@ -103,7 +111,12 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             if (e) console.log("error retriving peer info from connection object");
             else console.log("peer we are sending name to: ", peerInfo);
         });
+        //ask for our name from main to send to our new peer
         process.send({protocol: 'newUserNameRequest', peer: peerInfo});
+        //ask for the chat logs from our new peer
+        node.dialProtocol(sendName, 'chatLogRequest', (err, conn) => {
+            if (err) console.log("error sending chatlogRequest: ", err);
+        });
     });
 
     node.handle('newUser', (protocol, conn) => {
@@ -140,6 +153,21 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             }
         }));
     });
+
+    //handle requests for our chat logs
+    node.handle('chatLogRequest', (protocol, conn) => {
+        process.send({protocol: 'chatLogRequest'});
+    });
+
+    //handle reception of chat logs from new peer
+    node.handle('chatLogResponse', (protocol, conn) => {
+        console.log("recieved chat log from new peer");
+        pull(conn, pull.collect((err, data) => {
+            var processedLogs = data[0].toJSON();
+            console.log("buffer converted to json is: ", processedLogs);
+            //process.send({protocol: 'chatLodDisplay', logs: data[0]});
+        }));
+    })
 /*
     node.handle('getKnownPeers', (protocol, conn) => {
         node.dialProtocol(conn, 'sendingPeers', (err, conn) => {

@@ -101,6 +101,10 @@ peerProcess.on('message', (m) => {
         console.log("recieved disconnect notice from libp2p");
         mainWindow.webContents.send('disconnectNotice', [m.name]);
     }
+    else if (m.protocol === 'chatLogRequest') {
+        console.log("recieved chat log request from libp2p");
+        peerProcess.send({protocol: 'chatLogResponse', logs: chatLog});
+    }
 });
 
 //Catch message:send
