@@ -95,7 +95,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 })
             }
         }
-        else if (m.protocol === 'chatLogRequest') {
+        else if (m.protocol === 'chatLogResponse') {
             console.log("got our chat log from main");
             node.dialProtocol(sendName, 'chatLogResponse', (protocol, conn) => {
                 pull(pull.values([m.logs]), conn);
