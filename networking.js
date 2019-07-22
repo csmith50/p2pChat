@@ -92,7 +92,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
                 node.dialProtocol(knownNodes[i], 'disconnect', (err, conn) => {
                     pull(pull.values([m.name]), conn);
                     console.log("sent disconnect notice to all peers");
-                })
+                });
             }
         }
         else if (m.protocol === 'chatLogResponse') {
@@ -175,15 +175,16 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             if (err) console.log("error getting log data from new peer: ", err);
             console.log("inside the chatLogResponse pull collect----------------------");
             //data is sent as a buffer so we need to convert to json and parse it
-            var names = arg[0].toJSON();
-            var messages = arg[1].toJSON();
-            var times = arg[2].toJSON();
+            var names = data[0].toJSON();
+            var messages = data[1].toJSON();
+            var times = data[2].toJSON();
             console.log("here is data represented as json: ", names);
             console.log(messages);
             console.log(times);
 
             //process.send({protocol: 'chatLogDisplay', names: data[0], messages: data[1], times: data[2]});
         }));
+        console.log("got to the point after pull");
     });
 /*
     node.handle('getKnownPeers', (protocol, conn) => {
