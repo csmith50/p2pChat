@@ -25,7 +25,7 @@
         ipcRenderer.on('recieve', (event, arg) => {
             console.log("entered recieve callback...");
             console.log("variables are: ", arg);
-            displayMessage(arg[0], arg[1], arg[2], false);
+            displayMessage(arg[0], arg[1], arg[2], false, true);
             //play an audio cue that we have a new message
             var audio = new Audio('content/blip-recieve.wav');
             audio.play();
@@ -50,7 +50,7 @@
 
         ipcRenderer.on('chatLogDisplay', (event, arg) => {
             for (var i = 0; i < arg[0].length; i++) {
-                displayMessage(arg[0][i], arg[1][i], arg[2][i]);
+                displayMessage(arg[0][i], arg[1][i], arg[2][i], false, true);
             }
         });
 
@@ -64,6 +64,7 @@
         }
 
         function parseTime(timeStr) {
+            console.log("time string is: ", timeStr);
             var year = timeStr.substr(0, 3);
             var month = timeStr.substr(5, 6);
             var day = timeStr.substr(8, 9);
@@ -80,12 +81,13 @@
             return date;
         }
 
-        function formatTime(timeTemp) {
+        function formatTime(timeTemp, convert) {
             if (typeof(timeTemp) == "string") {
                 console.log("time was a string");
                 var time = parseTime(timeTemp);
             }
             else var time = timeTemp;
+            if (convert) var time = convertTime(time);
             var currentTime = getCurrentTime();
             //if the current time is more than 25 hours later than the time of message then display date
             console.log("in format time before bug time is: ", time);
@@ -93,13 +95,23 @@
                 return (time.getMonth()+1 + '/' + time.getDate());
             }
             else {
-                //TODO: add a check here to see if the time is greater than 12 and if so mod it by 12 and add a PM
-                //also if the time is less than 12 add an AM 
                 var string = time.getHours() % 12 + ":";
                 if (parseInt(time.getMinutes(), 10) < 10) string += "0" + time.getMinutes();
                 else string += time.getMinutes();
                 return string;
             }
+        }
+
+        function convertTime(time) {
+            //when we recieve a time string it is 6 hours off
+            //this reverses that
+            var newHour = time.getHours();
+            for (var i = 0; i < 6; i++) {
+                newHour -= 1;
+                if (newHour < 0) newHour = 23;
+            }
+            time.setHours(newHour);
+            return time;
         }
 
         function focusLastMessage() {
@@ -110,7 +122,7 @@
             }
         }
 
-        function displayMessage(message, time, displayName, focus) {
+        function displayMessage(message, time, displayName, focus, convert) {
             console.log("inside displaymessage");
             //create our nodes
             //message block
@@ -139,7 +151,7 @@
             meta_time_a.value = "time_text"
             meta_time.setAttributeNode(meta_time_a);
             var meta_name_t = document.createTextNode(displayName + " ");
-            var meta_time_t = document.createTextNode(formatTime(time));
+            var meta_time_t = document.createTextNode(formatTime(time, convert));
 
             meta_name.appendChild(meta_name_t);
             meta_time.appendChild(meta_time_t);
@@ -190,7 +202,7 @@
             document.getElementById("chat-log").appendChild(message_block);
         }
 
-        function sendEnter(e) {
+        function sendEnter(e, convert) {
             if (e.keyCode == 13) {
                 //get message and add time code 
                 var message = document.getElementById("textarea").value;
@@ -203,7 +215,7 @@
                 sendToMain(package);
 
                 //update display
-                displayMessage(package.message, package.time, name, true);
+                displayMessage(package.message, package.time, name, true, convert);
                 
                 //remove text in chat text window
                 document.getElementById("textarea").value = '';
@@ -213,7 +225,7 @@
                 audio.play();
             }
         }
-        function send() {
+        function send(convert) {
             //get message and add time code 
             var message = document.getElementById("textarea").value;
             if (message === "") return;
@@ -225,7 +237,7 @@
             sendToMain(package);
 
             //update display
-            displayMessage(package.message, package.time, name, true);
+            displayMessage(package.message, package.time, name, true, convert);
 
             //remove text in chat text window
             document.getElementById("textarea").value = '';
@@ -252,8 +264,8 @@
     </div>
     <div class = "text-enter">
         <div class = "row">
-            <input type = "textarea" name = "message" id = "textarea" onkeypress = "sendEnter(event)" value = "" class = "u-full-width" placeholder = "Enter a message..." autofocus>
-            <input type = "button" name = "send" value = "Send" id = "sendButton" onclick = "send(event)" class = "button-primary">
+            <input type = "textarea" name = "message" id = "textarea" onkeypress = "sendEnter(event, false)" value = "" class = "u-full-width" placeholder = "Enter a message..." autofocus>
+            <input type = "button" name = "send" value = "Send" id = "sendButton" onclick = "send(event, false)" class = "button-primary">
         </div>
     </div>
 </body>

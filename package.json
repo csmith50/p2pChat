@@ -4,7 +4,8 @@
   "description": "A chat app that connects users via P2P technologies",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=content/logo.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Round Table Chat\""
   },
   "author": "Cameron Smith",
   "license": "MIT",
@@ -24,5 +25,8 @@
     "play-sound": "^1.1.3",
     "pull-stream": "^3.6.12",
     "ws": ">=3.3.1"
+  },
+  "devDependencies": {
+    "electron-packager": "^14.0.2"
   }
 }

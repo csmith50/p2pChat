@@ -5,6 +5,21 @@ const pull = require('pull-stream');
 
 var knownNodes = [];
 var sendName;
+var sentChatLog = false;
+
+var chatLogFunc = function (err, data) {
+    if (err) console.log("error getting log data from new peer: ", err);
+    console.log("inside the chatLogResponse pull collect----------------------");
+    //data is sent as a buffer so we need to convert to json and parse it
+    var names = data[0].toJSON();
+    var messages = data[1].toJSON();
+    var times = data[2].toJSON();
+    console.log("here is data represented as json: ", names);
+    console.log(messages);
+    console.log(times);
+
+    //process.send({protocol: 'chatLogDisplay', names: data[0], messages: data[1], times: data[2]});
+};
 
 waterfall([ //this section of code will run asynchronously with the rest of the function
     (cb) => PeerInfo.create(cb),
@@ -96,19 +111,22 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
             }
         }
         else if (m.protocol === 'chatLogResponse') {
-            console.log("got our chat log from main");
-            node.dialProtocol(sendName, 'chatLogResponse', (protocol, conn) => {
-                var names = [];
-                var messages = [];
-                var times = [];
-                for (var i = 0; i < m.logs.length; i++) {
-                    names.push(m.logs[i].name);
-                    messages.push(m.logs[i].message);
-                    times.push(m.logs[i].time);
-                }
-                pull(pull.values([names, messages, times]), conn);
-                console.log("sent our logs to the user");
-            });
+            if (!sentChatLog) {
+                console.log("got our chat log from main");
+                node.dialProtocol(sendName, 'chatLogResponse', (protocol, conn) => {
+                    var names = [];
+                    var messages = [];
+                    var times = [];
+                    for (var i = 0; i < m.logs.length; i++) {
+                        names.push(m.logs[i].name);
+                        messages.push(m.logs[i].message);
+                        times.push(m.logs[i].time);
+                    }
+                    pull(pull.values([names, messages, times]), conn);
+                    console.log("sent our logs to the user");
+                });
+            }
+            sentChatLog = true;
         }
         else console.log("did not recognize message protocol from main: ", m);
     });
@@ -171,19 +189,7 @@ waterfall([ //this section of code will run asynchronously with the rest of the 
     //handle reception of chat logs from new peer
     node.handle('chatLogResponse', (protocol, conn) => {
         console.log("recieved chat log from new peer");
-        pull(conn, pull.collect((err, data) => {
-            if (err) console.log("error getting log data from new peer: ", err);
-            console.log("inside the chatLogResponse pull collect----------------------");
-            //data is sent as a buffer so we need to convert to json and parse it
-            var names = data[0].toJSON();
-            var messages = data[1].toJSON();
-            var times = data[2].toJSON();
-            console.log("here is data represented as json: ", names);
-            console.log(messages);
-            console.log(times);
-
-            //process.send({protocol: 'chatLogDisplay', names: data[0], messages: data[1], times: data[2]});
-        }));
+        pull(conn, pull.collect(chatLogFunc));
         console.log("got to the point after pull");
     });
 /*
