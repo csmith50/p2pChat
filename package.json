@@ -12,7 +12,7 @@
   "dependencies": {
     "async-waterfall": "^0.1.5",
     "defaults-deep": "^0.2.4",
-    "electron": "^7.2.4",
+    "electron": "^15.5.5",
     "libp2p": "^0.25.3",
     "libp2p-delegated-peer-routing": "^0.2.2",
     "libp2p-kad-dht": "^0.15.0",
